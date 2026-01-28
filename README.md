@@ -16,23 +16,47 @@ The goal of this project is to demonstrate a production-ready approach to Kubern
 
 ```mermaid
 graph TD
-    User -->|Terraform| AWS
-    subgraph AWS Cloud
-        subgraph VPC
-            PublicSubnets[Public Subnets (ALB, NAT)]
-            PrivateSubnets[Private Subnets (Nodes, Pods)]
+    %% Nodes
+    User[["👤 User / Developer"]]
+    
+    subgraph GitOps_Flow ["⚙️ GitOps Pipeline"]
+        GitHub["GitHub Repository\n(Source of Truth)"]
+        ArgoCD["🐙 ArgoCD\n(GitOps Controller)"]
+    end
+    
+    subgraph AWS ["☁️ AWS Cloud (us-east-1)"]
+        subgraph VPC ["VPC (10.0.0.0/16)"]
             
-            subgraph EKS Cluster
-                ControlPlane[Control Plane]
-                NodeGroup[Managed Node Group]
+            subgraph Public_Subnets ["🔒 Public Subnets"]
+                IGW["Internet Gateway"]
+                NAT["NAT Gateway"]
+                ALB["Application Load Balancer"]
+            end
+            
+            subgraph Private_Subnets ["🛡️ Private Subnets"]
+                subgraph EKS ["☸️ EKS Cluster"]
+                    ControlPlane["Control Plane\n(API Server)"]
+                    
+                    subgraph Nodes ["Managed Node Groups"]
+                        AppPods["📦 App Pods"]
+                        ArgoPods["🐙 ArgoCD Pods"]
+                    end
+                end
             end
         end
     end
+
+    %% Data Flow
+    User -->|"1. git push"| GitHub
+    GitHub -->|"2. Webhook"| ArgoCD
+    ArgoCD -.->|"3. Sync K8s Manifests"| ControlPlane
+    ControlPlane -->|"4. Schedule Pods"| Nodes
     
-    subgraph GitOps
-        ArgoCD -->|Syncs| EKS Cluster
-        GitHub -->|Webhooks| ArgoCD
-    end
+    %% Traffic Flow
+    User ==>"5. HTTPS Request"| ALB
+    ALB ==>"6. Traffic"| AppPods
+    AppPods -.->|"7. Outbound (Registry/API)"| NAT
+    NAT -.-> IGW
 ```
 
 ## 📂 Repository Structure
