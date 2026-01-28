@@ -53,8 +53,8 @@ graph TD
     ControlPlane -->|"4. Schedule Pods"| Nodes
     
     %% Traffic Flow
-    User ==>"5. HTTPS Request"| ALB
-    ALB ==>"6. Traffic"| AppPods
+    User ==>|"5. HTTPS Request"| ALB
+    ALB ==>|"6. Traffic"| AppPods
     AppPods -.->|"7. Outbound (Registry/API)"| NAT
     NAT -.-> IGW
 ```
