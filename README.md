@@ -20,8 +20,8 @@ graph TD
     User[["👤 User / Developer"]]
     
     subgraph GitOps_Flow ["⚙️ GitOps Pipeline"]
-        GitHub["GitHub Repository\n(Source of Truth)"]
-        ArgoCD["🐙 ArgoCD\n(GitOps Controller)"]
+        GitHub["GitHub Repository<br/>(Source of Truth)"]
+        ArgoCD["🐙 ArgoCD<br/>(GitOps Controller)"]
     end
     
     subgraph AWS ["☁️ AWS Cloud (us-east-1)"]
@@ -35,7 +35,7 @@ graph TD
             
             subgraph Private_Subnets ["🛡️ Private Subnets"]
                 subgraph EKS ["☸️ EKS Cluster"]
-                    ControlPlane["Control Plane\n(API Server)"]
+                    ControlPlane["Control Plane<br/>(API Server)"]
                     
                     subgraph Nodes ["Managed Node Groups"]
                         AppPods["📦 App Pods"]
